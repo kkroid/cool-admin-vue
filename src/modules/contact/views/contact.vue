@@ -6,9 +6,32 @@
 			<cl-search ref="Search" @search="onSearch" />
 		</cl-row>
 
-		<cl-row>
-			<cl-table ref="Table" />
-		</cl-row>
+		<!-- 水印容器 -->
+		<div class="watermark-container">
+			<cl-row>
+				<cl-table ref="Table" />
+			</cl-row>
+			<!-- 水印 -->
+			<div class="watermark-overlay">
+				<div
+					v-for="rowIndex in watermarkRows"
+					:key="`row-${rowIndex}`"
+					class="watermark-row"
+				>
+					<div
+						v-for="colIndex in watermarkCols"
+						:key="`col-${colIndex}`"
+						class="watermark-text"
+						:style="{
+							top: `${(rowIndex - 1) * watermarkSpacingY + watermarkOffsetY}px`,
+							left: `${(colIndex - 1) * watermarkSpacingX}px`
+						}"
+					>
+						{{ username }}
+					</div>
+				</div>
+			</div>
+		</div>
 
 		<cl-row>
 			<cl-flex1 />
@@ -22,12 +45,42 @@ defineOptions({
 	name: 'contact-info'
 });
 
+import { ref, onMounted } from 'vue';
 import { useCrud, useTable, useSearch } from '@cool-vue/crud';
 import { useCool } from '/@/cool';
 import { useI18n } from 'vue-i18n';
 
 const { service } = useCool();
 const { t } = useI18n();
+
+// 从 localStorage 获取用户名
+const username = (localStorage.getItem('username') || '匿名用户').replace(/['"]/g, ''); // 去掉引号
+
+// 水印相关数据
+const watermarkRows = ref<number>(0);
+const watermarkCols = ref<number>(0);
+const watermarkSpacingX = 250; // 水印水平间距（增大间距）
+const watermarkSpacingY = 150; // 水印垂直间距（增大间距）
+const watermarkOffsetY = 50; // 水印整体向下偏移，避免遮住表头
+
+// 动态计算水印行列数量
+function calculateWatermark() {
+	const container = document.querySelector('.watermark-container');
+	if (container) {
+		const containerWidth = container.clientWidth;
+		const containerHeight = container.clientHeight;
+
+		// 根据容器大小计算水印行列数量
+		watermarkRows.value = Math.ceil(containerHeight / watermarkSpacingY);
+		watermarkCols.value = Math.ceil(containerWidth / watermarkSpacingX);
+	}
+}
+
+// 在组件挂载后计算水印
+onMounted(() => {
+	calculateWatermark();
+	window.addEventListener('resize', calculateWatermark); // 监听窗口大小变化
+});
 
 // cl-table
 const Table = useTable({
@@ -102,3 +155,30 @@ function refresh(params?: any) {
 	Crud.value?.refresh(params);
 }
 </script>
+
+<style scoped>
+.watermark-container {
+	position: relative;
+}
+
+.watermark-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none; /* 不影响用户操作 */
+	overflow: hidden;
+	z-index: 10;
+}
+
+.watermark-text {
+	position: absolute;
+	color: rgba(0, 0, 0, 0.1); /* 半透明效果 */
+	font-size: 36px;
+	transform: rotate(-30deg);
+	white-space: nowrap;
+	user-select: none; /* 禁止选择水印文本 */
+	pointer-events: none;
+}
+</style>
