@@ -351,6 +351,73 @@ declare namespace Eps {
 		[key: string]: any;
 	}
 
+	interface ContactInfoEntity {
+		/**
+		 * ID
+		 */
+		id?: number;
+
+		/**
+		 * 姓名
+		 */
+		name?: string;
+
+		/**
+		 * 公司
+		 */
+		company?: string;
+
+		/**
+		 * 职位
+		 */
+		position?: string;
+
+		/**
+		 * 电话
+		 */
+		phone?: string;
+
+		/**
+		 * 邮箱
+		 */
+		email?: string;
+
+		/**
+		 * 其他信息
+		 */
+		misc?: string;
+
+		/**
+		 * 路径
+		 */
+		path?: string;
+
+		/**
+		 * 路径
+		 */
+		remark?: string;
+
+		/**
+		 * 创建时间
+		 */
+		createTime?: string;
+
+		/**
+		 * 更新时间
+		 */
+		updateTime?: string;
+
+		/**
+		 * 姓名
+		 */
+		createByName?: string;
+
+		/**
+		 * 任意键值
+		 */
+		[key: string]: any;
+	}
+
 	interface DemoGoodsEntity {
 		/**
 		 * ID
@@ -999,7 +1066,7 @@ declare namespace Eps {
 		 */
 		_permission: { getModuleTree: boolean; createCode: boolean };
 
-		request: Service["request"];
+		request: Service['request'];
 	}
 
 	interface BaseComm {
@@ -1064,7 +1131,7 @@ declare namespace Eps {
 			logout: boolean;
 		};
 
-		request: Service["request"];
+		request: Service['request'];
 	}
 
 	interface BaseOpen {
@@ -1115,7 +1182,7 @@ declare namespace Eps {
 			eps: boolean;
 		};
 
-		request: Service["request"];
+		request: Service['request'];
 	}
 
 	interface BaseSysDepartment {
@@ -1160,7 +1227,7 @@ declare namespace Eps {
 			add: boolean;
 		};
 
-		request: Service["request"];
+		request: Service['request'];
 	}
 
 	interface BaseSysLog {
@@ -1198,7 +1265,7 @@ declare namespace Eps {
 		 */
 		_permission: { setKeep: boolean; getKeep: boolean; clear: boolean; page: boolean };
 
-		request: Service["request"];
+		request: Service['request'];
 	}
 
 	interface BaseSysMenu {
@@ -1288,7 +1355,7 @@ declare namespace Eps {
 			add: boolean;
 		};
 
-		request: Service["request"];
+		request: Service['request'];
 	}
 
 	interface BaseSysParam {
@@ -1350,7 +1417,7 @@ declare namespace Eps {
 			add: boolean;
 		};
 
-		request: Service["request"];
+		request: Service['request'];
 	}
 
 	interface BaseSysRole {
@@ -1412,7 +1479,7 @@ declare namespace Eps {
 			add: boolean;
 		};
 
-		request: Service["request"];
+		request: Service['request'];
 	}
 
 	interface BaseSysUser {
@@ -1481,7 +1548,69 @@ declare namespace Eps {
 			add: boolean;
 		};
 
-		request: Service["request"];
+		request: Service['request'];
+	}
+
+	interface ContactInfo {
+		/**
+		 * 删除
+		 */
+		delete(data?: any): Promise<any>;
+
+		/**
+		 * 修改
+		 */
+		update(data?: any): Promise<any>;
+
+		/**
+		 * 单个信息
+		 */
+		info(data?: any): Promise<ContactInfoEntity>;
+
+		/**
+		 * 列表查询
+		 */
+		list(data?: any): Promise<ContactInfoEntity[]>;
+
+		/**
+		 * 分页查询
+		 */
+		page(data?: any): Promise<{
+			pagination: { size: number; page: number; total: number; [key: string]: any };
+			list: ContactInfoEntity[];
+			[key: string]: any;
+		}>;
+
+		/**
+		 * 新增
+		 */
+		add(data?: any): Promise<any>;
+
+		/**
+		 * 权限标识
+		 */
+		permission: {
+			delete: string;
+			update: string;
+			info: string;
+			list: string;
+			page: string;
+			add: string;
+		};
+
+		/**
+		 * 权限状态
+		 */
+		_permission: {
+			delete: boolean;
+			update: boolean;
+			info: boolean;
+			list: boolean;
+			page: boolean;
+			add: boolean;
+		};
+
+		request: Service['request'];
 	}
 
 	interface DemoGoods {
@@ -1543,7 +1672,7 @@ declare namespace Eps {
 			add: boolean;
 		};
 
-		request: Service["request"];
+		request: Service['request'];
 	}
 
 	interface DemoTenant {
@@ -1572,7 +1701,7 @@ declare namespace Eps {
 		 */
 		_permission: { noTenant: boolean; noUse: boolean; use: boolean };
 
-		request: Service["request"];
+		request: Service['request'];
 	}
 
 	interface DictInfo {
@@ -1648,7 +1777,7 @@ declare namespace Eps {
 			add: boolean;
 		};
 
-		request: Service["request"];
+		request: Service['request'];
 	}
 
 	interface DictType {
@@ -1710,7 +1839,7 @@ declare namespace Eps {
 			add: boolean;
 		};
 
-		request: Service["request"];
+		request: Service['request'];
 	}
 
 	interface PluginInfo {
@@ -1779,7 +1908,7 @@ declare namespace Eps {
 			add: boolean;
 		};
 
-		request: Service["request"];
+		request: Service['request'];
 	}
 
 	interface RecycleData {
@@ -1812,7 +1941,7 @@ declare namespace Eps {
 		 */
 		_permission: { restore: boolean; info: boolean; page: boolean };
 
-		request: Service["request"];
+		request: Service['request'];
 	}
 
 	interface SpaceInfo {
@@ -1874,7 +2003,7 @@ declare namespace Eps {
 			add: boolean;
 		};
 
-		request: Service["request"];
+		request: Service['request'];
 	}
 
 	interface SpaceType {
@@ -1936,7 +2065,7 @@ declare namespace Eps {
 			add: boolean;
 		};
 
-		request: Service["request"];
+		request: Service['request'];
 	}
 
 	interface TaskInfo {
@@ -2019,7 +2148,7 @@ declare namespace Eps {
 			add: boolean;
 		};
 
-		request: Service["request"];
+		request: Service['request'];
 	}
 
 	interface UserAddress {
@@ -2059,7 +2188,7 @@ declare namespace Eps {
 
 		/**
 		 * 权限标识
-		 */
+.vscode/settings.json		 */
 		permission: {
 			delete: string;
 			update: string;
@@ -2081,7 +2210,7 @@ declare namespace Eps {
 			add: boolean;
 		};
 
-		request: Service["request"];
+		request: Service['request'];
 	}
 
 	interface UserInfo {
@@ -2143,7 +2272,7 @@ declare namespace Eps {
 			add: boolean;
 		};
 
-		request: Service["request"];
+		request: Service['request'];
 	}
 
 	type Service = {
@@ -2152,7 +2281,7 @@ declare namespace Eps {
 		 */
 		request(options?: {
 			url: string;
-			method?: "POST" | "GET" | "PUT" | "DELETE" | "PATCH" | "HEAD" | "OPTIONS";
+			method?: 'POST' | 'GET' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS';
 			data?: any;
 			params?: any;
 			headers?: {
@@ -2177,6 +2306,7 @@ declare namespace Eps {
 				user: BaseSysUser;
 			};
 		};
+		contact: { info: ContactInfo };
 		demo: { goods: DemoGoods; tenant: DemoTenant };
 		dict: { info: DictInfo; type: DictType };
 		plugin: { info: PluginInfo };
@@ -2186,5 +2316,5 @@ declare namespace Eps {
 		user: { address: UserAddress; info: UserInfo };
 	};
 
-	type DictKey = "brand" | "occupation";
+	type DictKey = 'brand' | 'occupation';
 }
