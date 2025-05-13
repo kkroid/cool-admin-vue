@@ -45,7 +45,7 @@ defineOptions({
 	name: 'contact-info'
 });
 
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, nextTick, watch } from 'vue';
 import { useCrud, useTable, useSearch } from '@cool-vue/crud';
 import { useCool } from '/@/cool';
 import { useI18n } from 'vue-i18n';
@@ -59,28 +59,19 @@ const username = (localStorage.getItem('username') || '匿名用户').replace(/[
 // 水印相关数据
 const watermarkRows = ref<number>(0);
 const watermarkCols = ref<number>(0);
-const watermarkSpacingX = 250; // 水印水平间距（增大间距）
-const watermarkSpacingY = 150; // 水印垂直间距（增大间距）
+const watermarkSpacingX = 250; // 水印水平间距
+const watermarkSpacingY = 150; // 水印垂直间距
 const watermarkOffsetY = 50; // 水印整体向下偏移，避免遮住表头
 
-// 动态计算水印行列数量
 function calculateWatermark() {
 	const container = document.querySelector('.watermark-container');
 	if (container) {
 		const containerWidth = container.clientWidth;
 		const containerHeight = container.clientHeight;
-
-		// 根据容器大小计算水印行列数量
 		watermarkRows.value = Math.ceil(containerHeight / watermarkSpacingY);
 		watermarkCols.value = Math.ceil(containerWidth / watermarkSpacingX);
 	}
 }
-
-// 在组件挂载后计算水印
-onMounted(() => {
-	calculateWatermark();
-	window.addEventListener('resize', calculateWatermark); // 监听窗口大小变化
-});
 
 // cl-table
 const Table = useTable({
@@ -140,10 +131,9 @@ function onSearch(params: any) {
 		return;
 	}
 	Crud.value?.refresh(params).then(() => {
-		// 刷新后打印当前表格数据
-		// nextTick(() => {
-		// 	console.log('搜索结果:', Table.value?.Table?.data);
-		// });
+		nextTick(() => {
+			calculateWatermark();
+		});
 	});
 }
 
@@ -152,8 +142,30 @@ function refresh(params?: any) {
 	if (!params) {
 		return;
 	}
-	Crud.value?.refresh(params);
+	Crud.value?.refresh(params).then(() => {
+		nextTick(() => {
+			calculateWatermark();
+		});
+	});
 }
+
+// 页面挂载后和窗口变化时都重新计算
+onMounted(() => {
+	nextTick(() => {
+		calculateWatermark();
+		window.addEventListener('resize', calculateWatermark);
+	});
+});
+
+// 监听表格数据变化，数据变化后重新计算水印
+watch(
+	() => Table.value?.Table?.data?.length,
+	() => {
+		nextTick(() => {
+			calculateWatermark();
+		});
+	}
+);
 </script>
 
 <style scoped>
@@ -167,18 +179,18 @@ function refresh(params?: any) {
 	left: 0;
 	width: 100%;
 	height: 100%;
-	pointer-events: none; /* 不影响用户操作 */
+	pointer-events: none;
 	overflow: hidden;
 	z-index: 10;
 }
 
 .watermark-text {
 	position: absolute;
-	color: rgba(0, 0, 0, 0.1); /* 半透明效果 */
-	font-size: 36px;
+	color: rgba(0, 0, 0, 0.1);
+	font-size: 56px; /* 更大字体 */
 	transform: rotate(-30deg);
 	white-space: nowrap;
-	user-select: none; /* 禁止选择水印文本 */
+	user-select: none;
 	pointer-events: none;
 }
 </style>
