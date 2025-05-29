@@ -200,6 +200,27 @@ watch(
 	overflow-y: auto;
 	margin-top: 12px;
 	border: 1px solid #ebebeb; /* 仅作示例 */
+
+	/* 隐藏滚动条 - 兼容多种浏览器 */
+	/* Webkit browsers (Chrome, Safari, Edge) */
+	&::-webkit-scrollbar {
+		display: none;
+	}
+
+	/* Firefox */
+	scrollbar-width: none;
+
+	/* IE 10+ */
+	-ms-overflow-style: none;
+}
+
+/* 全局隐藏所有滚动条 - 如果需要的话可以取消注释 */
+:global(*) {
+	&::-webkit-scrollbar {
+		display: none;
+	}
+	scrollbar-width: none;
+	-ms-overflow-style: none;
 }
 
 /* 水印样式保持不变 */
