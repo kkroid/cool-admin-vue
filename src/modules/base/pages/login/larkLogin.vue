@@ -22,7 +22,6 @@
 			<p class="error-message">{{ error }}</p>
 			<button @click="retry" class="retry-btn">重试</button>
 		</div>
-
 		<!-- 调试信息独立显示 -->
 		<pre v-if="showDebugInfo" class="debug-info">{{ debugInfo }}</pre>
 	</div>
@@ -94,8 +93,10 @@ export default defineComponent({
 						appID: import.meta.env.VITE_APP_ID,
 						scopeList: [],
 						success: res => resolve(res.code),
-						fail: err =>
-							reject(new Error(err.errString || `授权失败(错误码: ${err.errno})`))
+						fail: err => {
+							debugInfo.value += '获取授权失败: ' + JSON.stringify(err, null, 2);
+							reject(new Error(err.errString || `授权失败(错误码: ${err.errno})`));
+						}
 					});
 				});
 			});
@@ -106,14 +107,16 @@ export default defineComponent({
 				status.value = 'loading';
 				error.value = '';
 				await loadSDK();
-
 				const code = await getAuthCode();
-				debugInfo.value = '获取到的授权码: ' + code;
-
-				const result = await service.base.open.feishuLogin({ code }).then(user);
+				debugInfo.value += '\n获取到的授权码: ' + code;
+				// 先获取完整的登录响应
+				const result = await service.base.open.feishuLogin({ code });
+				// 手动设置 token
+				user.setToken(result);
+				// 触发 token 事件
 				await Promise.all(app.events.hasToken.map(e => e()));
+				// 打印完整的用户信息用于调试
 				debugInfo.value += '\n登录成功:' + JSON.stringify(result, null, 2);
-
 				storage.set('username', result.username || '匿名用户');
 				router.push('/');
 				status.value = 'success';
@@ -132,7 +135,7 @@ export default defineComponent({
 			authenticate();
 		});
 
-		return { status, userInfo, error, retry, debugInfo };
+		return { status, userInfo, error, retry, debugInfo, showDebugInfo };
 	}
 });
 </script>
