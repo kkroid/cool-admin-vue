@@ -3,14 +3,19 @@
 		<cl-row>
 			<cl-refresh-btn />
 			<cl-flex1 />
-			<cl-search ref="Search" @search="onSearch" />
+			<cl-search
+				ref="Search"
+				@search="onSearch"
+				@keyup.enter="() => onSearch(Search.Form.form)"
+			/>
 		</cl-row>
 
 		<!-- 水印容器 -->
 		<div class="watermark-container">
-			<cl-row>
+			<!-- 表格可滚动区域：高度由tableMaxHeight计算决定 -->
+			<div class="table-scrollable" :style="{ maxHeight: tableMaxHeight + 'px' }">
 				<cl-table ref="Table" />
-			</cl-row>
+			</div>
 			<!-- 水印 -->
 			<div class="watermark-overlay">
 				<div
@@ -33,10 +38,10 @@
 			</div>
 		</div>
 
-		<cl-row>
-			<cl-flex1 />
+		<!-- 分页单独放置 -->
+		<div class="pagination-area">
 			<cl-pagination />
-		</cl-row>
+		</div>
 	</cl-crud>
 </template>
 
@@ -71,6 +76,20 @@ function calculateWatermark() {
 		watermarkRows.value = Math.ceil(containerHeight / watermarkSpacingY);
 		watermarkCols.value = Math.ceil(containerWidth / watermarkSpacingX);
 	}
+}
+
+// 表格最大高度
+const tableMaxHeight = ref(600); // 初始高度，可随意指定
+
+function updateTableHeight() {
+	// 设一个大概思路：获取 window.innerHeight - 头部搜索区域的占用 - 分页和其他UI的占用
+	// 实际项目中，可根据页面布局动态计算
+	const headerHeight = 100; // 顶部搜索/操作区占用
+	const footerHeight = 100; // 分页/底部区域占用
+	const padding = 20; // 上下内边距或间隙等
+
+	const availableHeight = window.innerHeight - headerHeight - footerHeight - padding;
+	tableMaxHeight.value = availableHeight > 200 ? availableHeight : 200; // 给个最小值，避免太小
 }
 
 // cl-table
@@ -128,6 +147,7 @@ const Crud = useCrud(
 
 function onSearch(params: any) {
 	if (!params) {
+		console.warn('Search params is empty');
 		return;
 	}
 	Crud.value?.refresh(params).then(() => {
@@ -153,7 +173,9 @@ function refresh(params?: any) {
 onMounted(() => {
 	nextTick(() => {
 		calculateWatermark();
+		updateTableHeight();
 		window.addEventListener('resize', calculateWatermark);
+		window.addEventListener('resize', updateTableHeight);
 	});
 });
 
@@ -173,6 +195,14 @@ watch(
 	position: relative;
 }
 
+/* 让表格区域可滚动，防止撑开页面 */
+.table-scrollable {
+	overflow-y: auto;
+	margin-top: 12px;
+	border: 1px solid #ebebeb; /* 仅作示例 */
+}
+
+/* 水印样式保持不变 */
 .watermark-overlay {
 	position: absolute;
 	top: 0;
@@ -192,5 +222,13 @@ watch(
 	white-space: nowrap;
 	user-select: none;
 	pointer-events: none;
+}
+
+/* 分页区域可以独立一行，避免被挤压 */
+.pagination-area {
+	margin-top: 12px;
+	border-top: 1px solid #ebebeb; /* 仅作示例 */
+	padding-top: 10px;
+	text-align: right;
 }
 </style>
