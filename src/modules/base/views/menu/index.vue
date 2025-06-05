@@ -179,6 +179,12 @@ const Table = useTable({
 			minWidth: 170
 		},
 		{
+			prop: 'link',
+			label: t('外链地址'),
+			minWidth: 200,
+			showOverflowTooltip: true
+		},
+		{
 			prop: 'keepAlive',
 			label: t('路由缓存'),
 			width: 100
@@ -281,6 +287,17 @@ const Upsert = useUpsert({
 				name: 'el-input',
 				props: {
 					placeholder: t('请输入节点路由，如：/test')
+				}
+			}
+		},
+		{
+			prop: 'link',
+			label: t('外链地址'),
+			hidden: ({ scope }) => scope.type != 1,
+			component: {
+				name: 'el-input',
+				props: {
+					placeholder: t('请输入外链地址，如: https://www.example.com')
 				}
 			}
 		},

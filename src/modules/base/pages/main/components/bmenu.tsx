@@ -17,13 +17,39 @@ export default defineComponent({
 		// 页面跳转
 		function onSelect(url: string) {
 			if (url != route.path) {
-				router.push(url);
+				// 获取当前菜单项的 link 信息
+				const currentMenu = findMenuByPath(url, menu.list);
+				const query: any = {};
+
+				// 如果菜单有 link 信息，添加到路由查询参数中
+				if (currentMenu?.link) {
+					query.content = currentMenu.link;
+				}
+
+				router.push({
+					path: url,
+					query
+				});
 			}
 
 			// 小屏下点击收起左侧菜单
 			if (browser.isMini) {
 				app.fold(true);
 			}
+		}
+
+		// 根据路径查找菜单项
+		function findMenuByPath(path: string, menuList: any[]): any {
+			for (const menuItem of menuList) {
+				if (menuItem.path === path) {
+					return menuItem;
+				}
+				if (menuItem.children && menuItem.children.length > 0) {
+					const found = findMenuByPath(path, menuItem.children);
+					if (found) return found;
+				}
+			}
+			return null;
 		}
 
 		// 渲染子菜单
@@ -118,7 +144,7 @@ export default defineComponent({
 					if (e.type == 0) {
 						try {
 							refs.menu?.open(String(e.id));
-						} catch (err) { }
+						} catch (err) {}
 
 						if (e.children) {
 							deep(e.children);
